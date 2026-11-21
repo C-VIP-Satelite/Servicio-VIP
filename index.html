@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<html lang="es" class="h-full select-none">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Encuesta de Satisfacción - Kiosco Cine</title>
+<!-- Tailwind CSS CDN -->
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+body {
+font-family: 'Inter', sans-serif;
+touch-action: manipulation;
+}
+/* Dynamic smooth background transition /
+.theme-bg {
+transition: background-color 0.4s cubic-bezier(0.16, 1, 0.3, 1), color 0.4s ease;
+}
+/ Range slider customization /
+input[type=range] {
+-webkit-appearance: none;
+appearance: none;
+background: transparent;
+cursor: pointer;
+}
+input[type=range]:focus {
+outline: none;
+}
+input[type=range]::-webkit-slider-thumb {
+-webkit-appearance: none;
+height: 52px;
+width: 52px;
+border-radius: 9999px;
+background: transparent;
+cursor: grab;
+}
+input[type=range]::-moz-range-thumb {
+height: 52px;
+width: 52px;
+border-radius: 9999px;
+background: transparent;
+border: none;
+cursor: grab;
+}
+/ Smooth modal animations */
+@keyframes popIn {
+0% { transform: scale(0.94); opacity: 0; }
+100% { transform: scale(1); opacity: 1; }
+}
+.animate-pop {
+animation: popIn 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+</style>
+</head>
+<body class="h-full bg-neutral-950 flex items-center justify-center p-0 sm:p-4 overflow-hidden">
+
+<!-- MAIN APP CONTAINER (Kiosk Layout) -->
+<div id="appCard" class="theme-bg relative w-full h-full sm:h-[840px] sm:max-h-[95vh] sm:w-[410px] sm:rounded-[44px] shadow-2xl flex flex-col justify-between p-6 sm:p-7 overflow-hidden" style="background-color: #B5F263; color: #1A2E05;">
+
+<!-- TOP BAR -->
+<header class="flex items-center justify-between z-20 shrink-0">
+<!-- Hamburger Menu Button (Left) -->
+<button id="btnMenu" type="button" aria-label="Abrir menú" class="w-11 h-11 rounded-full flex items-center justify-center transition-transform active:scale-90" style="background-color: rgba(0,0,0,0.08);">
+<svg class="w-5 h-5 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24">
+<path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
+</svg>
+</button>
+
+<!-- Actions Right (ES/EN Toggle + Info Button) -->
+<div class="flex items-center gap-2">
+<!-- Language Selector -->
+<button id="btnLang" type="button" class="w-11 h-11 rounded-full flex items-center justify-center font-black text-xs tracking-wider transition-transform active:scale-90" style="background-color: rgba(0,0,0,0.08);">
+ES
+</button>
+
+<!-- Info Button (1 tap = Info Modal / 5 taps = Teams Setup) -->
+<button id="btnInfo" type="button" aria-label="Información y Configuración" class="relative w-11 h-11 rounded-full flex items-center justify-center transition-transform active:scale-90" style="background-color: rgba(0,0,0,0.08);">
+<svg class="w-5 h-5 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24">
+<circle cx="12" cy="12" r="9"></circle>
+<path stroke-linecap="round" d="M12 11v5M12 8h.01"></path>
+</svg>
+<!-- Visual counter badge for fast multi-taps -->
+<span id="tapBadge" class="hidden absolute -top-1 -right-1 w-5 h-5 rounded-full bg-neutral-900 text-white text-[10px] font-black flex items-center justify-center shadow-md">1</span>
+</button>
+</div>
+</header>
+
+<!-- MAIN SURVEY VIEW -->
+<main id="surveyView" class="flex-1 flex flex-col items-center justify-between py-2 z-10 min-h-0">
+
+<!-- Header Text -->
+<div class="text-center px-1 mt-1">
+<h1 id="mainTitle" class="text-2xl sm:text-[26px] font-extrabold leading-tight tracking-tight">
+¿Cómo fue tu experiencia hoy?
+</h1>
+<p id="subTitle" class="text-xs sm:text-[13px] font-medium opacity-85 mt-1.5 leading-snug max-w-[320px] mx-auto">
+Evalúa tu experiencia o avísanos si hay algo por atender en la sala al instante.
+</p>
+</div>
+
+<!-- Popcorn SVG Character -->
+<div id="characterWrapper" class="relative w-56 h-56 sm:w-60 sm:h-60 flex items-center justify-center my-auto pointer-events-none select-none">
+<svg id="popcornSvg" viewBox="0 0 300 300" class="w-full h-full drop-shadow-xl overflow-visible pointer-events-none">
+<defs>
+<!-- Light and body gradient -->
+<radialGradient id="popcornBodyGrad" cx="40%" cy="30%" r="70%">
+<stop offset="0%" stop-color="#FFE63B"/>
+<stop offset="55%" stop-color="#FFC700"/>
+<stop offset="100%" stop-color="#F59E0B"/>
+</radialGradient>
+<!-- Eye clip paths for eyelids -->
+<clipPath id="leftEyeClip">
+<circle cx="114" cy="152" r="33"/>
+</clipPath>
+<clipPath id="rightEyeClip">
+<circle cx="186" cy="152" r="33"/>
+</clipPath>
+</defs>
+
+<!-- Fluffy Popcorn Kernel Body -->
+<g id="popcornBody">
+<path d="M148 34 C192 28, 232 62, 226 106 C268 112, 286 156, 266 196 C252 224, 224 234, 206 232 C202 268, 166 284, 132 272 C106 264, 92 242, 88 224 C46 226, 22 190, 36 152 C44 132, 60 120, 74 116 C64 74, 98 38, 148 34 Z"
+fill="url(#popcornBodyGrad)" stroke="#E58E00" stroke-width="5" stroke-linejoin="round"/>
+
+<!-- Top Highlights -->
+<path d="M88 98 C92 62, 126 44, 168 48 C184 50, 194 56, 198 62 C180 56, 144 54, 118 72 C102 82, 94 98, 92 114 C88 110, 87 104, 88 98 Z" fill="#FFF59D" opacity="0.85"/>
+<path d="M214 116 C234 116, 250 124, 256 134 C242 128, 226 126, 212 128 Z" fill="#FFF59D" opacity="0.75"/>
+
+<!-- Body Shadows -->
+<path d="M132 76 Q150 86 168 74 Q162 98 148 106 Q138 94 132 76 Z" fill="#E08600" opacity="0.65"/>
+<path d="M54 166 C56 194, 82 212, 108 206 C96 218, 66 216, 52 192 C48 182, 50 172, 54 166 Z" fill="#E08600" opacity="0.55"/>
+<path d="M248 168 C244 196, 216 212, 192 204 C206 218, 236 214, 248 188 Z" fill="#E08600" opacity="0.55"/>
+<path d="M116 236 C136 250, 166 248, 184 234 C168 256, 134 256, 116 236 Z" fill="#E08600" opacity="0.45"/>
+</g>
+
+<!-- Eyes, Eyelids and Eyebrows -->
+<g id="eyesGroup">
+<!-- Left Eye -->
+<g clip-path="url(#leftEyeClip)">
+<circle cx="114" cy="152" r="33" fill="#FFFFFF"/>
+<!-- Navy Blue Pupil (#08145E) -->
+<circle id="pupilLeft" cx="114" cy="152" r="23" fill="#08145E"/>
+<!-- Angry Eyelid (State 0 - Malo) -->
+<polygon id="angryLidLeft" points="65,123 155,147 155,95 65,95" fill="#FFC700" class="hidden"/>
+<!-- Neutral Eyelid (State 1 - Regular) -->
+<rect id="neutralLidLeft" x="72" y="105" width="84" height="42" fill="#FFC700" class="hidden"/>
+</g>
+<!-- White Ring Outline -->
+<circle cx="114" cy="152" r="31" fill="none" stroke="#FFFFFF" stroke-width="4.5"/>
+
+<!-- Right Eye -->
+<g clip-path="url(#rightEyeClip)">
+<circle cx="186" cy="152" r="33" fill="#FFFFFF"/>
+<!-- Navy Blue Pupil (#08145E) -->
+<circle id="pupilRight" cx="186" cy="152" r="23" fill="#08145E"/>
+<!-- Angry Eyelid (State 0 - Malo) -->
+<polygon id="angryLidRight" points="145,147 235,123 235,95 145,95" fill="#FFC700" class="hidden"/>
+<!-- Neutral Eyelid (State 1 - Regular) -->
+<rect id="neutralLidRight" x="144" y="105" width="84" height="42" fill="#FFC700" class="hidden"/>
+</g>
+<!-- White Ring Outline -->
+<circle cx="186" cy="152" r="31" fill="none" stroke="#FFFFFF" stroke-width="4.5"/>
+
+<!-- Navy Eyebrows in V (State 0 - Malo) -->
+<g id="angryBrows" class="hidden">
+<line x1="74" y1="125.4" x2="148" y2="145.1" stroke="#08145E" stroke-width="7.5" stroke-linecap="round"/>
+<line x1="226" y1="125.4" x2="152" y2="145.1" stroke="#08145E" stroke-width="7.5" stroke-linecap="round"/>
+</g>
+
+<!-- Navy Horizontal Eyebrows (State 1 - Regular) -->
+<g id="neutralBrows" class="hidden">
+<line x1="76" y1="145" x2="146" y2="145" stroke="#08145E" stroke-width="7" stroke-linecap="round"/>
+<line x1="154" y1="145" x2="224" y2="145" stroke="#08145E" stroke-width="7" stroke-linecap="round"/>
+</g>
+</g>
+
+<!-- Dynamic Mouth in Navy (#08145E) -->
+<path id="mouthPath" d="M 126 196 Q 150 222 174 196" fill="none" stroke="#08145E" stroke-width="7.5" stroke-linecap="round"/>
+</svg>
+</div>
+
+<!-- State Text Label -->
+<div class="text-center my-1">
+<div id="ratingLabel" class="text-4xl sm:text-[42px] font-black tracking-tight uppercase opacity-90 transition-all duration-200">
+BUENO
+</div>
+</div>
+
+<!-- SLIDER CONTROL (0, 1, 2) -->
+<div class="w-full px-2 my-2">
+<div class="relative h-12 flex items-center">
+<!-- Track background -->
+<div class="w-full h-2 rounded-full relative flex items-center justify-between px-1" style="background-color: rgba(0,0,0,0.12);">
+<span class="w-3 h-3 rounded-full" style="background-color: rgba(0,0,0,0.25);"></span>
+<span class="w-3 h-3 rounded-full" style="background-color: rgba(0,0,0,0.25);"></span>
+<span class="w-3 h-3 rounded-full" style="background-color: rgba(0,0,0,0.25);"></span>
+</div>
+
+<!-- Visual Slider Thumb -->
+<div id="sliderThumb" class="pointer-events-none absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-11 h-11 rounded-full shadow-lg flex items-center justify-center transition-all duration-150" style="left: 100%; background-color: #1A2E05; color: #B5F263;">
+<svg id="thumbFace" class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round">
+<path d="M 7 10 Q 12 16 17 10"/>
+</svg>
+</div>
+
+<!-- Transparent Input Range -->
+<input id="ratingSlider" type="range" min="0" max="2" step="1" value="2" aria-label="Calificar experiencia" class="absolute inset-0 w-full h-full opacity-0 z-10 cursor-pointer">
+</div>
+
+<!-- Direct step labels -->
+<div class="flex justify-between text-xs font-extrabold opacity-80 mt-1 px-1">
+<button type="button" data-val="0" class="slider-step-btn py-1 px-2 rounded-lg hover:opacity-100 transition-opacity">Malo</button>
+<button type="button" data-val="1" class="slider-step-btn py-1 px-2 rounded-lg hover:opacity-100 transition-opacity">Regular</button>
+<button type="button" data-val="2" class="slider-step-btn py-1 px-2 rounded-lg hover:opacity-100 transition-opacity">Bueno</button>
+</div>
+</div>
+
+<!-- BOTTOM CONTROLS -->
+<div class="w-full flex flex-col gap-2.5 mt-2">
+<!-- Row 1: Add Note + Submit (Grid 2 Cols) -->
+<div class="grid grid-cols-2 gap-3 w-full">
+<!-- Add Note Button -->
+<button id="btnAddNote" type="button" class="py-3.5 px-4 rounded-full font-bold text-sm transition-transform active:scale-95 flex items-center justify-center gap-2 border border-black/10 shadow-xs" style="background-color: rgba(255,255,255,0.45);">
+<svg class="w-4 h-4 shrink-0 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+<path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+</svg>
+<span id="txtAddNote" class="pointer-events-none">Agregar nota</span>
+</button>
+
+<!-- Submit Button -->
+<button id="btnSubmit" type="button" class="py-3.5 px-4 rounded-full font-bold text-sm shadow-xl transition-transform active:scale-95 flex items-center justify-center gap-2" style="background-color: #1A2E05; color: #FFFFFF;">
+<span id="txtSubmit" class="pointer-events-none">Enviar</span>
+<svg class="w-4 h-4 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+<path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+</svg>
+</button>
+</div>
+
+<!-- Row 2: Report Problem Button (Full Width w-full) -->
+<button id="btnOpenReport" type="button" class="w-full py-3.5 px-5 rounded-full font-semibold text-sm transition-transform active:scale-95 flex items-center justify-center gap-2 border border-black/10 shadow-xs" style="background-color: rgba(255,255,255,0.45);">
+<svg class="w-4 h-4 shrink-0 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2.3" viewBox="0 0 24 24">
+<path stroke-linecap="round" stroke-linejoin="round" d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"></path>
+</svg>
+<span id="txtReportBtn" class="pointer-events-none">Reportar un problema</span>
+</button>
+</div>
+</main>
+
+<!-- THANK YOU VIEW -->
+<section id="thankYouView" class="hidden flex-1 flex-col items-center justify-center text-center px-4 z-10 animate-pop">
+<div class="w-28 h-28 mb-4 pointer-events-none select-none">
+<svg viewBox="0 0 300 300" class="w-full h-full drop-shadow-md">
+<path d="M148 34 C192 28, 232 62, 226 106 C268 112, 286 156, 266 196 C252 224, 224 234, 206 232 C202 268, 166 284, 132 272 C106 264, 92 242, 88 224 C46 226, 22 190, 36 152 C44 132, 60 120, 74 116 C64 74, 98 38, 148 34 Z" fill="url(#popcornBodyGrad)" stroke="#E58E00" stroke-width="5"/>
+<circle cx="114" cy="152" r="31" fill="#FFFFFF"/>
+<circle cx="114" cy="152" r="23" fill="#08145E"/>
+<circle cx="186" cy="152" r="31" fill="#FFFFFF"/>
+<circle cx="186" cy="152" r="23" fill="#08145E"/>
+<path d="M 124 194 Q 150 224 176 194" fill="none" stroke="#08145E" stroke-width="8" stroke-linecap="round"/>
+</svg>
+</div>
+<h2 id="thanksTitle" class="text-3xl font-black tracking-tight mb-2">¡Gracias por tus comentarios!</h2>
+<p id="thanksDesc" class="text-sm font-medium opacity-85 max-w-xs mb-8 leading-relaxed">
+Tu opinión nos ayuda a mejorar tu experiencia en cada visita.
+</p>
+<button id="btnReset" type="button" class="py-3.5 px-8 rounded-full font-bold text-sm shadow-xl transition-transform active:scale-95 flex items-center gap-2" style="background-color: #1A2E05; color: #FFFFFF;">
+<span id="txtContinue">Volver al inicio</span>
+<span>→</span>
+</button>
+</section>
+
+<!-- MODAL 1: ADD NOTE -->
+<div id="noteModal" class="hidden fixed inset-0 z-40 bg-black/50 backdrop-blur-xs flex items-end sm:items-center justify-center p-4">
+<div class="w-full max-w-sm bg-white text-neutral-900 rounded-3xl p-6 shadow-2xl animate-pop">
+<div class="flex items-center justify-between mb-3">
+<h3 id="noteModalTitle" class="text-lg font-extrabold">Agregar una nota</h3>
+<button id="btnCloseNote" type="button" class="w-8 h-8 rounded-full bg-neutral-100 flex items-center justify-center font-bold text-neutral-600 hover:bg-neutral-200">✕</button>
+</div>
+<textarea id="noteInput" rows="4" placeholder="Escribe aquí tus comentarios..." class="w-full rounded-2xl bg-neutral-100 p-3.5 text-sm font-medium text-neutral-900 focus:outline-none focus:ring-2 focus:ring-neutral-900 resize-none"></textarea>
+<div class="flex gap-2 mt-4">
+<button id="btnSaveNoteOnly" type="button" class="flex-1 py-3 rounded-full bg-neutral-200 text-neutral-900 font-bold text-sm hover:bg-neutral-300">Guardar nota</button>
+<button id="btnSubmitWithNote" type="button" class="flex-1 py-3 rounded-full bg-neutral-900 text-white font-bold text-sm hover:bg-neutral-800">Enviar →</button>
+</div>
+</div>
+</div>
+
+<!-- MODAL 2: REPORT A PROBLEM (2 STEPS, NO EMOJIS) -->
+<div id="reportModal" class="hidden fixed inset-0 z-50 bg-black/65 flex items-end sm:items-center justify-center p-0 sm:p-4">
+<div class="w-full max-w-sm max-h-[90vh] overflow-y-auto bg-white text-neutral-900 rounded-t-[32px] sm:rounded-[32px] p-6 shadow-2xl animate-pop">
+
+<!-- Mobile drag indicator -->
+<div class="w-10 h-1.5 rounded-full bg-neutral-300 mx-auto mb-4 sm:hidden"></div>
+
+<!-- STEP 1: Category & Details -->
+<div id="reportStep1">
+<div class="flex items-center justify-between mb-2">
+<span class="text-[11px] font-extrabold uppercase tracking-wider px-3 py-1 rounded-full bg-amber-100 text-amber-900">Paso 1 de 2</span>
+<button id="btnCloseReport1" type="button" class="w-8 h-8 rounded-full bg-neutral-100 flex items-center justify-center font-bold text-neutral-600">✕</button>
+</div>
+<h3 class="text-xl font-black text-neutral-900 mt-1 mb-3">Reportar un problema</h3>
+
+<p class="text-xs font-bold text-neutral-500 uppercase tracking-wide mb-2">¿Qué sucedió?</p>
+<div id="categoryGrid" class="grid grid-cols-2 gap-2 mb-4">
+<button type="button" data-cat="Audio / Proyección" class="cat-pill py-2.5 px-3 rounded-2xl border-2 border-neutral-900 bg-neutral-900 text-white text-xs font-bold text-left transition-all shadow-xs">Audio / Imagen</button>
+<button type="button" data-cat="Dulcería / Alimentos" class="cat-pill py-2.5 px-3 rounded-2xl border-2 border-neutral-200 bg-neutral-50 text-neutral-700 text-xs font-bold text-left transition-all hover:bg-neutral-100">Dulcería / Alimentos</button>
+<button type="button" data-cat="Limpieza en Sala" class="cat-pill py-2.5 px-3 rounded-2xl border-2 border-neutral-200 bg-neutral-50 text-neutral-700 text-xs font-bold text-left transition-all hover:bg-neutral-100">Limpieza</button>
+<button type="button" data-cat="Asiento / Butaca" class="cat-pill py-2.5 px-3 rounded-2xl border-2 border-neutral-200 bg-neutral-50 text-neutral-700 text-xs font-bold text-left transition-all hover:bg-neutral-100">Asiento / Sala</button>
+<button type="button" data-cat="Otro" class="cat-pill py-2.5 px-3 rounded-2xl border-2 border-neutral-200 bg-neutral-50 text-neutral-700 text-xs font-bold text-left transition-all hover:bg-neutral-100">Otro</button>
+</div>
+
+<label for="reportDescInput" class="block text-xs font-bold text-neutral-500 uppercase tracking-wide mb-1.5">Detalle del problema (Opcional)</label>
+<textarea id="reportDescInput" rows="2" placeholder="Ej. El audio en la bocina izquierda se escucha distorsionado..." class="w-full rounded-2xl bg-neutral-100 p-3.5 text-xs font-medium text-neutral-900 focus:outline-none focus:ring-2 focus:ring-neutral-900 resize-none mb-5"></textarea>
+
+<button id="btnReportNext" type="button" class="w-full py-3.5 rounded-full bg-neutral-900 text-white font-bold text-sm shadow-lg transition-transform active:scale-95 flex items-center justify-center gap-2">
+<span>Siguiente</span>
+<span>→</span>
+</button>
+</div>
+
+<!-- STEP 2: Location in Theater (3 Columns) -->
+<div id="reportStep2" class="hidden">
+<div class="flex items-center justify-between mb-2">
+<span class="text-[11px] font-extrabold uppercase tracking-wider px-3 py-1 rounded-full bg-amber-100 text-amber-900">Paso 2 de 2</span>
+<button id="btnCloseReport2" type="button" class="w-8 h-8 rounded-full bg-neutral-100 flex items-center justify-center font-bold text-neutral-600">✕</button>
+</div>
+<h3 class="text-xl font-black text-neutral-900 mt-1 mb-1">Ubicación en Sala</h3>
+<p class="text-xs text-neutral-500 font-medium mb-4">Indícanos dónde te encuentras para atenderte de inmediato.</p>
+
+<!-- 3 Columns: Sala, Fila, Asiento -->
+<div class="grid grid-cols-3 gap-2 mb-4">
+<div>
+<label for="salaInput" class="block text-[11px] font-extrabold uppercase text-neutral-600 mb-1">Sala <span class="text-red-500">*</span></label>
+<input id="salaInput" type="text" placeholder="Ej. 4" class="w-full rounded-2xl bg-neutral-100 p-3 text-xs font-bold text-neutral-900 focus:outline-none focus:ring-2 focus:ring-neutral-900 text-center">
+</div>
+<div>
+<label for="filaInput" class="block text-[11px] font-extrabold uppercase text-neutral-600 mb-1">Fila</label>
+<input id="filaInput" type="text" placeholder="Ej. F" class="w-full rounded-2xl bg-neutral-100 p-3 text-xs font-bold text-neutral-900 focus:outline-none focus:ring-2 focus:ring-neutral-900 text-center">
+</div>
+<div>
+<label for="asientoInput" class="block text-[11px] font-extrabold uppercase text-neutral-600 mb-1">Asiento</label>
+<input id="asientoInput" type="text" placeholder="Ej. 12" class="w-full rounded-2xl bg-neutral-100 p-3 text-xs font-bold text-neutral-900 focus:outline-none focus:ring-2 focus:ring-neutral-900 text-center">
+</div>
+</div>
+
+<p id="reportValidationMsg" class="hidden text-xs font-bold text-red-600 mb-3 text-center bg-red-50 py-2 rounded-xl border border-red-200">Por favor ingresa el número o nombre de sala.</p>
+
+<div class="flex gap-2">
+<button id="btnReportBack" type="button" class="w-1/3 py-3.5 rounded-full bg-neutral-200 text-neutral-900 font-bold text-xs transition-transform active:scale-95">← Atrás</button>
+<button id="btnSendReport" type="button" class="w-2/3 py-3.5 rounded-full bg-neutral-900 text-white font-bold text-xs shadow-lg transition-transform active:scale-95">Enviar reporte</button>
+</div>
+</div>
+
+</div>
+</div>
+
+<!-- MODAL 3: SIDE MENU DRAWER -->
+<div id="sideMenuModal" class="hidden fixed inset-0 z-40 bg-black/55 backdrop-blur-xs flex items-center justify-start p-0">
+<div class="w-4/5 max-w-xs h-full bg-white text-neutral-900 p-6 shadow-2xl flex flex-col justify-between animate-pop">
+<div>
+<div class="flex items-center justify-between mb-6">
+<div class="flex items-center gap-2">
+<span class="text-2xl">🍿</span>
+<h3 class="text-lg font-black text-neutral-900">Cine Feedback</h3>
+</div>
+<button id="btnCloseSideMenu" type="button" class="w-8 h-8 rounded-full bg-neutral-100 flex items-center justify-center font-bold text-neutral-600">✕</button>
+</div>
+
+<div class="space-y-3">
+<button id="menuItemReport" type="button" class="w-full text-left p-3.5 rounded-2xl bg-neutral-100 font-bold text-xs flex items-center justify-between text-neutral-800 hover:bg-neutral-200">
+<span>Reportar problema en sala</span>
+<span>→</span>
+</button>
+
+<button id="menuItemLang" type="button" class="w-full text-left p-3.5 rounded-2xl bg-neutral-100 font-bold text-xs flex items-center justify-between text-neutral-800 hover:bg-neutral-200">
+<span>🌐 Cambiar Idioma</span>
+<span id="menuLangText" class="font-extrabold text-indigo-600">ES</span>
+</button>
+
+<button id="menuItemReset" type="button" class="w-full text-left p-3.5 rounded-2xl bg-neutral-100 font-bold text-xs flex items-center justify-between text-neutral-800 hover:bg-neutral-200">
+<span>🔄 Reiniciar encuesta</span>
+<span>→</span>
+</button>
+</div>
+</div>
+
+<div class="text-center pt-4 border-t border-neutral-100">
+<p class="text-[11px] font-semibold text-neutral-400">Kiosco de Atención Inmediata v2.5</p>
+</div>
+</div>
+</div>
+
+<!-- MODAL 4: APP INFORMATION (1 tap on "i") -->
+<div id="infoModal" class="hidden fixed inset-0 z-40 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
+<div class="w-full max-w-sm bg-white text-neutral-900 rounded-3xl p-6 shadow-2xl animate-pop text-center">
+<div class="w-12 h-12 rounded-2xl bg-amber-100 text-amber-800 flex items-center justify-center mx-auto mb-3">
+<svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2.3" viewBox="0 0 24 24">
+<circle cx="12" cy="12" r="9"></circle>
+<path stroke-linecap="round" d="M12 11v5M12 8h.01"></path>
+</svg>
+</div>
+<h3 id="infoModalTitle" class="text-lg font-black text-neutral-900 mb-1.5">Atención Instantánea en Sala</h3>
+<p id="infoModalDesc" class="text-xs text-neutral-600 leading-relaxed mb-5">
+Desliza la palomita para calificar tu experiencia o usa el botón de reporte para notificarnos cualquier detalle en tu sala (audio, limpieza o dulcería) y atenderte de inmediato.
+</p>
+<button id="btnCloseInfoModal" type="button" class="w-full py-3 rounded-full bg-neutral-900 text-white font-bold text-xs shadow-md transition-transform active:scale-95">
+Entendido
+</button>
+</div>
+</div>
+
+<!-- MODAL 5: HIDDEN MICROSOFT TEAMS CONFIGURATION WITH PIN 7289 (5 taps on "i") -->
+<div id="teamsModal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+<div class="w-full max-w-sm bg-white text-neutral-900 rounded-3xl p-6 shadow-2xl animate-pop">
+
+<!-- Modal Header -->
+<div class="flex items-center justify-between mb-4 pb-3 border-b border-neutral-100">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded-xl bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold text-sm">
+⚙️
+</div>
+<div>
+<h3 class="text-base font-black text-neutral-900 leading-tight">Microsoft Teams</h3>
+<p class="text-[11px] font-semibold text-neutral-500">Ajustes del sistema</p>
+</div>
+</div>
+<button id="btnCloseTeams" type="button" class="w-8 h-8 rounded-full bg-neutral-100 flex items-center justify-center font-bold text-neutral-600 hover:bg-neutral-200">✕</button>
+</div>
+
+<!-- VIEW 1: PIN LOCK SCREEN -->
+<div id="teamsPinView" class="text-center py-2">
+<div class="w-14 h-14 rounded-full bg-neutral-100 text-neutral-800 flex items-center justify-center mx-auto mb-3 shadow-inner">
+<svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+<rect x="5" y="11" width="14" height="10" rx="2"></rect>
+<circle cx="12" cy="16" r="1.5"></circle>
+<path stroke-linecap="round" d="M8 11V7a4 4 0 018 0v4"></path>
+</svg>
+</div>
+<h4 class="text-base font-black text-neutral-900 mb-1">Acceso Protegido</h4>
+<p class="text-xs text-neutral-500 font-medium mb-4">Ingresa el PIN de 4 dígitos para administrar la integración.</p>
+
+<input id="teamsPinInput" type="password" maxlength="4" inputmode="numeric" pattern="[0-9]*" placeholder="••••" class="w-36 text-center text-2xl font-black tracking-[0.4em] rounded-2xl bg-neutral-100 py-3 text-neutral-900 focus:outline-none focus:ring-2 focus:ring-indigo-600 mb-3 mx-auto block">
+
+<p id="teamsPinError" class="hidden text-xs font-bold text-red-600 mb-3 bg-red-50 py-1.5 px-3 rounded-xl border border-red-200">PIN incorrecto. Inténtalo de nuevo.</p>
+
+<button id="btnUnlockTeams" type="button" class="w-full py-3 rounded-full bg-neutral-900 text-white font-bold text-xs shadow-md transition-transform active:scale-95">
+Desbloquear
+</button>
+<p class="text-[10px] text-neutral-400 font-medium mt-3">PIN predeterminado: 7289</p>
+</div>
+
+<!-- VIEW 2: UNLOCKED CONFIGURATION -->
+<div id="teamsConfigView" class="hidden space-y-3">
+<div>
+<label for="teamsUrlInput" class="block text-[11px] font-extrabold uppercase tracking-wide text-neutral-600 mb-1">Webhook URL de Teams</label>
+<input id="teamsUrlInput" type="url" placeholder="https://prod-xx.logic.azure.com/workflows/..." class="w-full rounded-xl bg-neutral-100 p-3 text-xs font-mono text-neutral-900 focus:outline-none focus:ring-2 focus:ring-indigo-600">
+</div>
+
+<label class="flex items-center justify-between p-3 rounded-xl bg-neutral-100 cursor-pointer">
+<span class="text-xs font-bold text-neutral-800">Enviar calificaciones "Bueno"</span>
+<input id="teamsSendGoodCheck" type="checkbox" checked class="w-4 h-4 accent-indigo-600">
+</label>
+
+<p id="teamsFeedbackMsg" class="hidden text-xs font-bold p-2.5 rounded-xl"></p>
+
+<div class="flex flex-col gap-2 pt-1">
+<button id="btnSaveTeams" type="button" class="w-full py-3 rounded-full bg-indigo-600 text-white font-bold text-xs shadow-md transition-transform active:scale-95">Guardar conexión</button>
+<button id="btnTestTeams" type="button" class="w-full py-2.5 rounded-full bg-indigo-50 text-indigo-700 font-bold text-xs border border-indigo-200 hover:bg-indigo-100">⚡ Enviar alerta de prueba</button>
+</div>
+
+<!-- CHANGE PIN SECTION -->
+<div class="pt-3 border-t border-neutral-100">
+<details class="group">
+<summary class="text-xs font-bold text-neutral-500 cursor-pointer hover:text-neutral-900 flex items-center justify-between">
+<span>🔒 Cambiar PIN de acceso</span>
+<span class="group-open:rotate-180 transition-transform">▾</span>
+</summary>
+<div class="mt-2.5 space-y-2">
+<input id="newPinInput" type="password" maxlength="4" inputmode="numeric" placeholder="Nuevo PIN (4 dígitos)" class="w-full rounded-xl bg-neutral-100 p-2.5 text-xs text-center font-bold text-neutral-900 focus:outline-none focus:ring-2 focus:ring-indigo-600">
+<button id="btnSaveNewPin" type="button" class="w-full py-2 rounded-xl bg-neutral-800 text-white font-bold text-xs">Actualizar PIN</button>
+<p id="pinChangeMsg" class="hidden text-[11px] font-bold text-center"></p>
+</div>
+</details>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+
+<!-- APPLICATION LOGIC -->
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+// Theme Definitions
+const THEMES = {
+0: { // MALO
+bg: '#FF9E80',
+text: '#3E1104',
+thumbBg: '#3E1104',
+thumbColor: '#FF9E80',
+btnBg: '#3E1104',
+labelEs: 'MALO',
+labelEn: 'BAD',
+mouth: 'M 122 212 Q 150 184 178 212',
+thumbMouth: 'M 7 15 Q 12 9 17 15'
+},
+1: { // REGULAR
+bg: '#FFE169',
+text: '#3B2800',
+thumbBg: '#3B2800',
+thumbColor: '#FFE169',
+btnBg: '#3B2800',
+labelEs: 'REGULAR',
+labelEn: 'NOT BAD',
+mouth: 'M 126 202 L 174 202',
+thumbMouth: 'M 7 12 L 17 12'
+},
+2: { // BUENO
+bg: '#B5F263',
+text: '#1A2E05',
+thumbBg: '#1A2E05',
+thumbColor: '#B5F263',
+btnBg: '#1A2E05',
+labelEs: 'BUENO',
+labelEn: 'GOOD',
+mouth: 'M 126 196 Q 150 222 174 196',
+thumbMouth: 'M 7 10 Q 12 16 17 10'
+}
+};
+
+let currentVal = 2;
+let currentLang = 'ES';
+let savedNote = '';
+let selectedCategory = 'Audio / Proyección';
+let infoTapCount = 0;
+let infoTapTimer = null;
+let infoOpenTimer = null;
+
+// Main DOM References
+const appCard = document.getElementById('appCard');
+const ratingSlider = document.getElementById('ratingSlider');
+const sliderThumb = document.getElementById('sliderThumb');
+const thumbFace = document.getElementById('thumbFace');
+const ratingLabel = document.getElementById('ratingLabel');
+const mouthPath = document.getElementById('mouthPath');
+const btnSubmit = document.getElementById('btnSubmit');
+const btnReset = document.getElementById('btnReset');
+
+// SVG Character Expressions
+const angryLidLeft = document.getElementById('angryLidLeft');
+const angryLidRight = document.getElementById('angryLidRight');
+const angryBrows = document.getElementById('angryBrows');
+const neutralLidLeft = document.getElementById('neutralLidLeft');
+const neutralLidRight = document.getElementById('neutralLidRight');
+const neutralBrows = document.getElementById('neutralBrows');
+
+// Load Saved Teams Configuration
+const teamsUrlInput = document.getElementById('teamsUrlInput');
+const teamsSendGoodCheck = document.getElementById('teamsSendGoodCheck');
+teamsUrlInput.value = localStorage.getItem('palomita_teams_webhook') || '';
+const savedSendGood = localStorage.getItem('palomita_teams_send_good');
+if (savedSendGood !== null) {
+teamsSendGoodCheck.checked = savedSendGood === 'true';
+}
+
+// Update UI components according to state value
+function updateUI(val) {
+currentVal = Number(val);
+const t = THEMES[currentVal];
+
+appCard.style.backgroundColor = t.bg;
+appCard.style.color = t.text;
+sliderThumb.style.left = ${currentVal * 50}%`;
+sliderThumb.style.backgroundColor = t.thumbBg;
+sliderThumb.style.color = t.thumbColor;
+btnSubmit.style.backgroundColor = t.btnBg;
+btnReset.style.backgroundColor = t.btnBg;
+
+ratingLabel.textContent = currentLang === 'ES' ? t.labelEs : t.labelEn;
+mouthPath.setAttribute('d', t.mouth);
+thumbFace.innerHTML = <path d="${t.thumbMouth}"/>`;
+
+// Eyebrows and Eyelids
+angryLidLeft.classList.toggle('hidden', currentVal !== 0);
+angryLidRight.classList.toggle('hidden', currentVal !== 0);
+angryBrows.classList.toggle('hidden', currentVal !== 0);
+
+neutralLidLeft.classList.toggle('hidden', currentVal !== 1);
+neutralLidRight.classList.toggle('hidden', currentVal !== 1);
+neutralBrows.classList.toggle('hidden', currentVal !== 1);
+}
+
+ratingSlider.addEventListener('input', (e) => updateUI(e.target.value));
+document.querySelectorAll('.slider-step-btn').forEach(btn => {
+btn.addEventListener('click', () => {
+ratingSlider.value = btn.dataset.val;
+updateUI(btn.dataset.val);
+});
+});
+
+// Smooth pupil motion tracking mouse/touch
+const pupilLeft = document.getElementById('pupilLeft');
+const pupilRight = document.getElementById('pupilRight');
+
+function movePupils(clientX, clientY) {
+const rect = appCard.getBoundingClientRect();
+const normX = ((clientX - rect.left) / rect.width - 0.5) * 2;
+const normY = ((clientY - rect.top) / rect.height - 0.5) * 2;
+const offsetX = Math.max(-6, Math.min(6, normX * 6));
+const offsetY = Math.max(-6, Math.min(6, normY * 6));
+
+pupilLeft.setAttribute('cx', 114 + offsetX);
+pupilLeft.setAttribute('cy', 152 + offsetY);
+pupilRight.setAttribute('cx', 186 + offsetX);
+pupilRight.setAttribute('cy', 152 + offsetY);
+}
+
+window.addEventListener('mousemove', (e) => movePupils(e.clientX, e.clientY));
+window.addEventListener('touchmove', (e) => {
+if (e.touches && e.touches[0]) {
+movePupils(e.touches[0].clientX, e.touches[0].clientY);
+}
+}, { passive: true });
+
+// Language Toggle ES / EN
+const btnLang = document.getElementById('btnLang');
+btnLang.addEventListener('click', () => {
+currentLang = currentLang === 'ES' ? 'EN' : 'ES';
+btnLang.textContent = currentLang;
+document.getElementById('menuLangText').textContent = currentLang;
+
+if (currentLang === 'ES') {
+document.getElementById('mainTitle').textContent = '¿Cómo fue tu experiencia hoy?';
+document.getElementById('subTitle').textContent = 'Evalúa tu experiencia o avísanos si hay algo por atender en la sala al instante.';
+document.getElementById('txtAddNote').textContent = savedNote ? 'Editar nota ✓' : 'Agregar nota';
+document.getElementById('txtSubmit').textContent = 'Enviar';
+document.getElementById('txtReportBtn').textContent = 'Reportar un problema';
+document.getElementById('thanksTitle').textContent = '¡Gracias por tus comentarios!';
+document.getElementById('thanksDesc').textContent = 'Tu opinión nos ayuda a mejorar tu experiencia en cada visita.';
+document.getElementById('txtContinue').textContent = 'Volver al inicio';
+} else {
+document.getElementById('mainTitle').textContent = 'How was your experience today?';
+document.getElementById('subTitle').textContent = 'Rate your experience or let us know right away if something needs attention in your theater.';
+document.getElementById('txtAddNote').textContent = savedNote ? 'Edit note ✓' : 'Add note';
+document.getElementById('txtSubmit').textContent = 'Submit';
+document.getElementById('txtReportBtn').textContent = 'Report a problem';
+document.getElementById('thanksTitle').textContent = 'Thank you for your feedback!';
+document.getElementById('thanksDesc').textContent = 'Your feedback helps us improve your experience every visit.';
+document.getElementById('txtContinue').textContent = 'Back to start';
+}
+updateUI(currentVal);
+});
+
+// Modal 1: Add Note
+const noteModal = document.getElementById('noteModal');
+const noteInput = document.getElementById('noteInput');
+
+document.getElementById('btnAddNote').addEventListener('click', () => {
+noteInput.value = savedNote;
+noteModal.classList.remove('hidden');
+});
+document.getElementById('btnCloseNote').addEventListener('click', () => noteModal.classList.add('hidden'));
+document.getElementById('btnSaveNoteOnly').addEventListener('click', () => {
+savedNote = noteInput.value.trim();
+document.getElementById('txtAddNote').textContent = savedNote
+? (currentLang === 'ES' ? 'Editar nota ✓' : 'Edit note ✓')
+: (currentLang === 'ES' ? 'Agregar nota' : 'Add note');
+noteModal.classList.add('hidden');
+});
+document.getElementById('btnSubmitWithNote').addEventListener('click', () => {
+savedNote = noteInput.value.trim();
+noteModal.classList.add('hidden');
+handleFinalSubmit('calificacion');
+});
+
+// Direct rating submission
+btnSubmit.addEventListener('click', () => handleFinalSubmit('calificacion'));
+
+// Modal 2: Report Problem
+const reportModal = document.getElementById('reportModal');
+const reportStep1 = document.getElementById('reportStep1');
+const reportStep2 = document.getElementById('reportStep2');
+const reportValidationMsg = document.getElementById('reportValidationMsg');
+
+// Side menu
+const sideMenuModal = document.getElementById('sideMenuModal');
+document.getElementById('btnMenu').addEventListener('click', () => sideMenuModal.classList.remove('hidden'));
+document.getElementById('btnCloseSideMenu').addEventListener('click', () => sideMenuModal.classList.add('hidden'));
+
+document.getElementById('menuItemReport').addEventListener('click', () => {
+sideMenuModal.classList.add('hidden');
+reportStep1.classList.remove('hidden');
+reportStep2.classList.add('hidden');
+reportValidationMsg.classList.add('hidden');
+reportModal.classList.remove('hidden');
+});
+document.getElementById('menuItemLang').addEventListener('click', () => {
+btnLang.click();
+});
+document.getElementById('menuItemReset').addEventListener('click', () => {
+sideMenuModal.classList.add('hidden');
+btnReset.click();
+});
+
+document.getElementById('btnOpenReport').addEventListener('click', () => {
+reportStep1.classList.remove('hidden');
+reportStep2.classList.add('hidden');
+reportValidationMsg.classList.add('hidden');
+reportModal.classList.remove('hidden');
+});
+
+document.getElementById('btnCloseReport1').addEventListener('click', () => reportModal.classList.add('hidden'));
+document.getElementById('btnCloseReport2').addEventListener('click', () => reportModal.classList.add('hidden'));
+
+document.querySelectorAll('.cat-pill').forEach(pill => {
+pill.addEventListener('click', () => {
+selectedCategory = pill.dataset.cat;
+document.querySelectorAll('.cat-pill').forEach(p => {
+p.className = 'cat-pill py-2.5 px-3 rounded-2xl border-2 border-neutral-200 bg-neutral-50 text-neutral-700 text-xs font-bold text-left transition-all hover:bg-neutral-100';
+});
+pill.className = 'cat-pill py-2.5 px-3 rounded-2xl border-2 border-neutral-900 bg-neutral-900 text-white text-xs font-bold text-left transition-all shadow-xs';
+});
+});
+
+document.getElementById('btnReportNext').addEventListener('click', () => {
+reportStep1.classList.add('hidden');
+reportStep2.classList.remove('hidden');
+});
+
+document.getElementById('btnReportBack').addEventListener('click', () => {
+reportStep2.classList.add('hidden');
+reportStep1.classList.remove('hidden');
+});
+
+document.getElementById('btnSendReport').addEventListener('click', () => {
+const sala = document.getElementById('salaInput').value.trim();
+const fila = document.getElementById('filaInput').value.trim();
+const asiento = document.getElementById('asientoInput').value.trim();
+const desc = document.getElementById('reportDescInput').value.trim();
+
+if (!sala) {
+reportValidationMsg.classList.remove('hidden');
+return;
+}
+reportValidationMsg.classList.add('hidden');
+reportModal.classList.add('hidden');
+
+handleFinalSubmit('reporte', {
+category: selectedCategory,
+description: desc,
+sala,
+fila: fila || 'N/A',
+asiento: asiento || 'N/A'
+});
+});
+
+// Final Submission Handler
+function handleFinalSubmit(tipo, reportData = null) {
+const ratingText = THEMES[currentVal].labelEs;
+sendToTeams({
+tipo,
+ratingVal: currentVal,
+ratingText,
+note: savedNote,
+reportData
+});
+
+document.getElementById('surveyView').classList.add('hidden');
+const thankYouView = document.getElementById('thankYouView');
+thankYouView.classList.remove('hidden');
+thankYouView.classList.add('flex');
+
+if (tipo === 'reporte' && reportData) {
+document.getElementById('thanksTitle').textContent = '¡Reporte recibido!';
+document.getElementById('thanksDesc').textContent = Atenderemos tu reporte en Sala ${reportData.sala} (Fila ${reportData.fila}, Asiento ${reportData.asiento}) a la brevedad.`;
+} else {
+document.getElementById('thanksTitle').textContent = currentLang === 'ES' ? '¡Gracias por tus comentarios!' : 'Thank you for your feedback!';
+document.getElementById('thanksDesc').textContent = currentLang === 'ES' ? 'Tu opinión nos ayuda a mejorar tu experiencia en cada visita.' : 'Your feedback helps us improve your experience every visit.';
+}
+}
+
+// Reset Survey
+btnReset.addEventListener('click', () => {
+savedNote = '';
+document.getElementById('noteInput').value = '';
+document.getElementById('reportDescInput').value = '';
+document.getElementById('salaInput').value = '';
+document.getElementById('filaInput').value = '';
+document.getElementById('asientoInput').value = '';
+document.getElementById('txtAddNote').textContent = currentLang === 'ES' ? 'Agregar nota' : 'Add note';
+ratingSlider.value = 2;
+updateUI(2);
+
+const thankYouView = document.getElementById('thankYouView');
+thankYouView.classList.add('hidden');
+thankYouView.classList.remove('flex');
+document.getElementById('surveyView').classList.remove('hidden');
+});
+
+// Fast Taps Detection on Info Button "i"
+const btnInfo = document.getElementById('btnInfo');
+const tapBadge = document.getElementById('tapBadge');
+const infoModal = document.getElementById('infoModal');
+const teamsModal = document.getElementById('teamsModal');
+const teamsPinView = document.getElementById('teamsPinView');
+const teamsConfigView = document.getElementById('teamsConfigView');
+const teamsPinInput = document.getElementById('teamsPinInput');
+const teamsPinError = document.getElementById('teamsPinError');
+
+btnInfo.addEventListener('click', () => {
+infoTapCount++;
+clearTimeout(infoTapTimer);
+clearTimeout(infoOpenTimer);
+
+if (infoTapCount > 1) {
+tapBadge.textContent = infoTapCount;
+tapBadge.classList.remove('hidden');
+}
+
+infoTapTimer = setTimeout(() => {
+infoTapCount = 0;
+tapBadge.classList.add('hidden');
+}, 2000);
+
+if (infoTapCount >= 5) {
+infoTapCount = 0;
+tapBadge.classList.add('hidden');
+infoModal.classList.add('hidden');
+
+// Open Teams modal locked by PIN
+teamsPinInput.value = '';
+teamsPinError.classList.add('hidden');
+teamsPinView.classList.remove('hidden');
+teamsConfigView.classList.add('hidden');
+teamsModal.classList.remove('hidden');
+setTimeout(() => teamsPinInput.focus(), 150);
+return;
+}
+
+if (infoTapCount === 1) {
+infoOpenTimer = setTimeout(() => {
+if (infoTapCount === 1) {
+infoTapCount = 0;
+infoModal.classList.remove('hidden');
+}
+}, 350);
+}
+});
+
+// PIN Unlock Verification (Default PIN: 7289)
+function unlockTeams() {
+const storedPin = localStorage.getItem('popcorn_teams_pin') || '7289';
+const enteredPin = teamsPinInput.value.trim();
+
+if (enteredPin === storedPin) {
+teamsPinError.classList.add('hidden');
+teamsPinView.classList.add('hidden');
+teamsConfigView.classList.remove('hidden');
+document.getElementById('teamsUrlInput').focus();
+} else {
+teamsPinError.classList.remove('hidden');
+teamsPinInput.value = '';
+teamsPinInput.focus();
+}
+}
+
+document.getElementById('btnUnlockTeams').addEventListener('click', unlockTeams);
+teamsPinInput.addEventListener('keydown', (e) => {
+if (e.key === 'Enter') unlockTeams();
+});
+
+// Update Security PIN
+document.getElementById('btnSaveNewPin').addEventListener('click', () => {
+const newPin = document.getElementById('newPinInput').value.trim();
+const pinMsg = document.getElementById('pinChangeMsg');
+if (/^\d{4}`$/.test(newPin)) {
+localStorage.setItem('popcorn_teams_pin', newPin);
+pinMsg.textContent = '✓ PIN actualizado con éxito';
+pinMsg.className = 'text-[11px] font-bold text-center text-emerald-600';
+pinMsg.classList.remove('hidden');
+document.getElementById('newPinInput').value = '';
+setTimeout(() => pinMsg.classList.add('hidden'), 2500);
+} else {
+pinMsg.textContent = '⚠️ El PIN debe ser de 4 dígitos numéricos';
+pinMsg.className = 'text-[11px] font-bold text-center text-red-600';
+pinMsg.classList.remove('hidden');
+}
+});
+
+document.getElementById('btnCloseInfoModal').addEventListener('click', () => infoModal.classList.add('hidden'));
+document.getElementById('btnCloseTeams').addEventListener('click', () => teamsModal.classList.add('hidden'));
+
+// Save Teams Configuration
+document.getElementById('btnSaveTeams').addEventListener('click', () => {
+localStorage.setItem('palomita_teams_webhook', teamsUrlInput.value.trim());
+localStorage.setItem('palomita_teams_send_good', teamsSendGoodCheck.checked);
+const msg = document.getElementById('teamsFeedbackMsg');
+msg.textContent = '✓ Conexión con Teams guardada correctamente.';
+msg.className = 'text-xs font-bold p-2.5 rounded-xl mb-3 bg-emerald-100 text-emerald-800';
+msg.classList.remove('hidden');
+setTimeout(() => {
+msg.classList.add('hidden');
+teamsModal.classList.add('hidden');
+}, 1200);
+});
+
+// Send Test Alert
+document.getElementById('btnTestTeams').addEventListener('click', async () => {
+const url = teamsUrlInput.value.trim();
+const msg = document.getElementById('teamsFeedbackMsg');
+if (!url) {
+msg.textContent = 'Ingresa primero la URL del Webhook de Teams.';
+msg.className = 'text-xs font-bold p-2.5 rounded-xl mb-3 bg-red-100 text-red-700';
+msg.classList.remove('hidden');
+return;
+}
+msg.textContent = 'Enviando prueba a Teams...';
+msg.className = 'text-xs font-bold p-2.5 rounded-xl mb-3 bg-amber-100 text-amber-800';
+msg.classList.remove('hidden');
+
+const ok = await sendToTeams({
+tipo: 'reporte',
+ratingVal: 0,
+ratingText: 'PRUEBA',
+note: '',
+reportData: {
+category: 'Prueba de conexión',
+description: 'Alerta de prueba enviada desde la app de la Palomita.',
+sala: 'VIP 1',
+fila: 'A',
+asiento: '1'
+}
+}, url, true);
+
+if (ok) {
+msg.textContent = '✅ ¡Enviado! Revisa tu chat de Workflows en Teams.';
+msg.className = 'text-xs font-bold p-2.5 rounded-xl mb-3 bg-emerald-100 text-emerald-800';
+} else {
+msg.textContent = '⚠️ No se pudo confirmar el envío. Verifica la URL del Webhook.';
+msg.className = 'text-xs font-bold p-2.5 rounded-xl mb-3 bg-red-100 text-red-700';
+}
+});
+
+// Send Adaptive Card Payload to Microsoft Teams Workflows
+async function sendToTeams(data, overrideUrl = null, forceSend = false) {
+const webhookUrl = overrideUrl || localStorage.getItem('palomita_teams_webhook');
+if (!webhookUrl) return false;
+
+const sendGood = localStorage.getItem('palomita_teams_send_good') !== 'false';
+if (!forceSend && !sendGood && data.tipo === 'calificacion' && data.ratingVal === 2) {
+return false;
+}
+
+const now = new Date();
+const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
+const dateString = now.toLocaleDateString([], { year: 'numeric', month: 'short', day: 'numeric' });
+const fullTimeStamp = ${timeString} (${dateString});
+
+const isReport = data.tipo === 'reporte';
+const cardStyle = isReport || data.ratingVal === 0 ? 'Attention' : (data.ratingVal === 1 ? 'Warning' : 'Good');
+const titleText = isReport
+? ⚠️ Reporte en Sala ${data.reportData.sala}:⭐ Calificación de Experiencia: ${data.ratingText};
+
+const facts = [
+{ title: 'Hora del Reporte:', value: timeString },
+{ title: 'Fecha:', value: dateString }
+ ];
+
+if (isReport) {
+facts.push(
+{ title: 'Categoría:', value: data.reportData.category },
+{ title: 'Sala:', value: data.reportData.sala },
+{ title: 'Fila / Asiento:', value: Fila ${data.reportData.fila} - Asiento ${data.reportData.asiento} },
+{ title: 'Detalle:', value: data.reportData.description || 'Sin descripción adicional' }
+);
+} else {
+facts.push(
+{ title: 'Evaluación:', value: data.ratingText },
+{ title: 'Nota del cliente:', value: data.note || 'Sin nota' }
+);
+}
+
+const adaptiveCardPayload = {
+type: 'message',
+attachments: [
+{
+contentType: 'application/vnd.microsoft.card.adaptive',
+contentUrl: null,
+content: {
+latex
+schema: 'http://adaptivecards.io/schemas/adaptive-card.json', type: 'AdaptiveCard', version: '1.4', body: [ { type: 'Container', style: cardStyle, items: [ { type: 'TextBlock', text: titleText, weight: 'Bolder', size: 'Medium', wrap: true }, { type: 'TextBlock', text: `🕒 Hora del evento: 
+
+{fullTimeStamp}`,
+size: 'Small',
+isSubtle: true,
+weight: 'Bolder',
+wrap: true
+}
+ ]
+},
+{
+type: 'FactSet',
+facts: facts
+}
+]
+}
+}
+]
+};
+
+try {
+const res = await fetch(webhookUrl, {
+method: 'POST',
+headers: { 'Content-Type': 'application/json' },
+body: JSON.stringify(adaptiveCardPayload)
+});
+return res.ok || res.status === 202;
+} catch (err) {
+console.warn('Error al enviar a Teams:', err);
+return false;
+}
+}
+
+// Initial UI update (Default state: Bueno = 2)
+updateUI(2);
+});
+</script>
+</body>
+</html>
