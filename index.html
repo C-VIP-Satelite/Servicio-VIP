@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="es" class="h-full select-none">
 <head>
@@ -52,6 +53,79 @@
         .animate-pop {
             animation: popIn 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
+        /* Popcorn interactive tap reactions (independent of rating) */
+        @keyframes popcornSquash {
+            0% { transform: scale(1, 1) translateY(0); }
+            25% { transform: scale(1.16, 0.84) translateY(10px); }
+            55% { transform: scale(0.9, 1.14) translateY(-16px); }
+            80% { transform: scale(1.05, 0.96) translateY(3px); }
+            100% { transform: scale(1, 1) translateY(0); }
+        }
+        @keyframes popcornWobble {
+            0%, 100% { transform: rotate(0deg) scale(1); }
+            20% { transform: rotate(-14deg) scale(1.06); }
+            45% { transform: rotate(12deg) scale(1.06); }
+            70% { transform: rotate(-7deg) scale(1.02); }
+            85% { transform: rotate(4deg) scale(1); }
+        }
+        @keyframes popcornShake {
+            0%, 100% { transform: translateX(0) rotate(0deg); }
+            15% { transform: translateX(-11px) rotate(-4deg); }
+            35% { transform: translateX(11px) rotate(4deg); }
+            55% { transform: translateX(-8px) rotate(-2deg); }
+            75% { transform: translateX(8px) rotate(2deg); }
+        }
+        @keyframes popcornJumpSpin {
+            0% { transform: translateY(0) scale(1); }
+            35% { transform: translateY(-22px) scale(1.12); }
+            65% { transform: translateY(4px) scale(0.95); }
+            100% { transform: translateY(0) scale(1); }
+        }
+        @keyframes popcornSurprise {
+            0% { transform: scale(1); }
+            30% { transform: scale(1.18); }
+            60% { transform: scale(0.94); }
+            100% { transform: scale(1); }
+        }
+        @keyframes sparkleBurst {
+            0% { opacity: 0; transform: scale(0.3) translateY(4px); }
+            40% { opacity: 1; transform: scale(1.15) translateY(-4px); }
+            100% { opacity: 0; transform: scale(0.6) translateY(-14px); }
+        }
+        @keyframes popcornBlush {
+            0%, 100% { transform: scale(1, 1) translateY(0); }
+            30% { transform: scale(1.07, 0.92) translateY(5px); }
+            65% { transform: scale(1.04, 0.95) translateY(3px); }
+        }
+        @keyframes popcornDoubleHop {
+            0%, 100% { transform: translateY(0) scale(1); }
+            22% { transform: translateY(-14px) scale(1.07); }
+            45% { transform: translateY(0) scale(0.96); }
+            68% { transform: translateY(-11px) scale(1.05); }
+            88% { transform: translateY(0) scale(0.98); }
+        }
+        @keyframes popcornSneeze {
+            0% { transform: translate(0, 0) rotate(0deg) scale(1); }
+            38% { transform: translate(-7px, -10px) rotate(-9deg) scale(1.06, 0.94); }
+            55% { transform: translate(12px, 8px) rotate(11deg) scale(0.92, 1.09); }
+            78% { transform: translate(4px, 2px) rotate(3deg) scale(1.02); }
+            100% { transform: translate(0, 0) rotate(0deg) scale(1); }
+        }
+        @keyframes butterDropletFly {
+            0% { opacity: 0; transform: translate(0, 0) scale(0.4); }
+            25% { opacity: 1; transform: translate(10px, -6px) scale(1.1); }
+            100% { opacity: 0; transform: translate(28px, 14px) scale(0.5); }
+        }
+        .react-squash { animation: popcornSquash 0.55s cubic-bezier(0.22, 1, 0.36, 1); }
+        .react-wobble { animation: popcornWobble 0.6s ease-in-out; }
+        .react-shake { animation: popcornShake 0.48s ease-in-out; }
+        .react-jump { animation: popcornJumpSpin 0.55s cubic-bezier(0.22, 1, 0.36, 1); }
+        .react-surprise { animation: popcornSurprise 0.45s cubic-bezier(0.22, 1, 0.36, 1); }
+        .react-blush { animation: popcornBlush 0.62s ease-in-out; }
+        .react-double-hop { animation: popcornDoubleHop 0.62s cubic-bezier(0.22, 1, 0.36, 1); }
+        .react-sneeze { animation: popcornSneeze 0.62s cubic-bezier(0.22, 1, 0.36, 1); }
+        .animate-sparkle { animation: sparkleBurst 0.65s ease-out forwards; }
+        .animate-butter-drops { animation: butterDropletFly 0.55s ease-out forwards; }
     </style>
 </head>
 <body class="h-full bg-neutral-950 flex items-center justify-center p-0 sm:p-4 overflow-hidden">
@@ -101,7 +175,22 @@
             </div>
 
             <!-- Popcorn SVG Character -->
-            <div id="characterWrapper" class="relative w-56 h-56 sm:w-60 sm:h-60 flex items-center justify-center my-auto pointer-events-none select-none">
+            <div id="characterWrapper" role="button" tabindex="0" aria-label="Tocar palomita" class="relative w-56 h-56 sm:w-60 sm:h-60 flex items-center justify-center my-auto cursor-pointer select-none">
+                <!-- Speech Bubble (Nube de diálogo) -->
+                <div id="speechBubble" class="pointer-events-none absolute -top-6 -right-3 sm:-right-6 z-20 max-w-[215px] bg-white/95 text-neutral-900 rounded-2xl px-3 py-2 shadow-lg border border-black/10 text-[10.5px] font-bold leading-snug text-center animate-pop transition-all duration-300 ease-out">
+                    <span id="speechBubbleText">Desliza para evaluar tu experiencia o usa el botón de reporte ⚠️ para notificarnos cualquier detalle en tu sala (audio, butaca o dulcería) y atenderte de inmediato.</span>
+                    <!-- Tail pointing to popcorn -->
+                    <div class="absolute -bottom-1.5 left-6 w-3 h-3 bg-white/95 border-r border-b border-black/10 rotate-45"></div>
+                </div>
+
+                <!-- Golden Sparkles Layer for Tap Reaction -->
+                <div id="popcornSparkles" class="hidden pointer-events-none absolute inset-0 z-20">
+                    <svg class="w-6 h-6 text-amber-200 absolute top-2 left-4 drop-shadow-sm" viewBox="0 0 24 24" fill="currentColor"><path d="M12 1l2.8 8.2L23 12l-8.2 2.8L12 23l-2.8-8.2L1 12l8.2-2.8z"/></svg>
+                    <svg class="w-5 h-5 text-yellow-100 absolute top-5 right-3 drop-shadow-sm" viewBox="0 0 24 24" fill="currentColor"><path d="M12 1l2.8 8.2L23 12l-8.2 2.8L12 23l-2.8-8.2L1 12l8.2-2.8z"/></svg>
+                    <svg class="w-5 h-5 text-amber-300 absolute bottom-6 left-2 drop-shadow-sm" viewBox="0 0 24 24" fill="currentColor"><path d="M12 1l2.8 8.2L23 12l-8.2 2.8L12 23l-2.8-8.2L1 12l8.2-2.8z"/></svg>
+                    <svg class="w-6 h-6 text-yellow-200 absolute bottom-4 right-5 drop-shadow-sm" viewBox="0 0 24 24" fill="currentColor"><path d="M12 1l2.8 8.2L23 12l-8.2 2.8L12 23l-2.8-8.2L1 12l8.2-2.8z"/></svg>
+                </div>
+
                 <svg id="popcornSvg" viewBox="0 0 300 300" class="w-full h-full drop-shadow-xl overflow-visible pointer-events-none">
                     <defs>
                         <!-- Light and body gradient -->
@@ -163,6 +252,20 @@
                         <!-- White Ring Outline -->
                         <circle cx="186" cy="152" r="31" fill="none" stroke="#FFFFFF" stroke-width="4.5"/>
 
+                        <!-- Starry Eye Sparkles (Temporary Tap Reaction: Asombro con ojos brillantes) -->
+                        <g id="eyeSparkles" class="hidden">
+                            <circle cx="106" cy="144" r="6.5" fill="#FFFFFF"/>
+                            <circle cx="121" cy="157" r="3.2" fill="#FFFFFF"/>
+                            <circle cx="178" cy="144" r="6.5" fill="#FFFFFF"/>
+                            <circle cx="193" cy="157" r="3.2" fill="#FFFFFF"/>
+                        </g>
+
+                        <!-- Shy Blush Cheeks (Temporary Tap Reaction: Sonrojo tímido) -->
+                        <g id="blushCheeks" class="hidden">
+                            <ellipse cx="90" cy="183" rx="15" ry="8" fill="#FF6B8B" opacity="0.65"/>
+                            <ellipse cx="210" cy="183" rx="15" ry="8" fill="#FF6B8B" opacity="0.65"/>
+                        </g>
+
                         <!-- Navy Eyebrows in V (State 0 - Malo) -->
                         <g id="angryBrows" class="hidden">
                             <line x1="74" y1="125.4" x2="148" y2="145.1" stroke="#08145E" stroke-width="7.5" stroke-linecap="round"/>
@@ -174,10 +277,27 @@
                             <line x1="76" y1="145" x2="146" y2="145" stroke="#08145E" stroke-width="7" stroke-linecap="round"/>
                             <line x1="154" y1="145" x2="224" y2="145" stroke="#08145E" stroke-width="7" stroke-linecap="round"/>
                         </g>
+
+                        <!-- Blinking Eyelids (Temporary Tap Reaction) -->
+                        <g id="blinkLids" class="hidden">
+                            <circle cx="114" cy="152" r="32" fill="#FFC700"/>
+                            <path d="M 92 154 Q 114 166 136 154" fill="none" stroke="#08145E" stroke-width="6.5" stroke-linecap="round"/>
+                            <circle cx="186" cy="152" r="32" fill="#FFC700"/>
+                            <path d="M 164 154 Q 186 166 208 154" fill="none" stroke="#08145E" stroke-width="6.5" stroke-linecap="round"/>
+                        </g>
                     </g>
 
                     <!-- Dynamic Mouth in Navy (#08145E) -->
                     <path id="mouthPath" d="M 126 196 Q 150 222 174 196" fill="none" stroke="#08145E" stroke-width="7.5" stroke-linecap="round"/>
+                    <!-- Surprise O Mouth (Temporary Tap Reaction) -->
+                    <ellipse id="surpriseMouth" cx="150" cy="204" rx="12" ry="15" fill="#08145E" class="hidden"/>
+                    <!-- Sneeze Mouth & Golden Butter Droplets (Temporary Tap Reaction: Estornudo de mantequilla) -->
+                    <path id="sneezeMouth" d="M 136 205 Q 150 193 164 205 Q 150 214 136 205 Z" fill="#08145E" class="hidden"/>
+                    <g id="butterDroplets" class="hidden">
+                        <path d="M 188 196 C 194 196, 200 202, 195 207 C 190 211, 184 205, 188 196 Z" fill="#FFF176" stroke="#E58E00" stroke-width="2"/>
+                        <path d="M 206 184 C 211 184, 216 189, 212 193 C 208 196, 203 191, 206 184 Z" fill="#FFE082" stroke="#E58E00" stroke-width="1.8"/>
+                        <path d="M 198 214 C 202 214, 206 218, 203 222 C 200 225, 195 220, 198 214 Z" fill="#FFF59D" stroke="#E58E00" stroke-width="1.8"/>
+                    </g>
                 </svg>
             </div>
 
@@ -287,10 +407,12 @@
 
         <!-- MODAL 2: REPORT A PROBLEM (2 STEPS, NO EMOJIS) -->
         <div id="reportModal" class="hidden fixed inset-0 z-50 bg-black/65 flex items-end sm:items-center justify-center p-0 sm:p-4">
-            <div class="w-full max-w-sm max-h-[90vh] overflow-y-auto bg-white text-neutral-900 rounded-t-[32px] sm:rounded-[32px] p-6 shadow-2xl animate-pop">
+            <div id="reportCard" class="w-full max-w-sm max-h-[90vh] overflow-y-auto bg-white text-neutral-900 rounded-t-[32px] sm:rounded-[32px] p-6 shadow-2xl animate-pop">
                 
                 <!-- Mobile drag indicator -->
-                <div class="w-10 h-1.5 rounded-full bg-neutral-300 mx-auto mb-4 sm:hidden"></div>
+                <div id="reportDragHandle" class="pt-1 pb-4 -mt-2 cursor-grab active:cursor-grabbing touch-none">
+                    <div class="w-12 h-1.5 rounded-full bg-neutral-300 mx-auto"></div>
+                </div>
 
                 <!-- STEP 1: Category & Details -->
                 <div id="reportStep1">
@@ -359,8 +481,15 @@
             <div class="w-4/5 max-w-xs h-full bg-white text-neutral-900 p-6 shadow-2xl flex flex-col justify-between animate-pop">
                 <div>
                     <div class="flex items-center justify-between mb-6">
-                        <div class="flex items-center gap-2">
-                            <span class="text-2xl">🍿</span>
+                        <div class="flex items-center gap-2.5">
+                            <svg viewBox="0 0 300 300" class="w-8 h-8 shrink-0 drop-shadow-xs">
+                                <path d="M148 34 C192 28, 232 62, 226 106 C268 112, 286 156, 266 196 C252 224, 224 234, 206 232 C202 268, 166 284, 132 272 C106 264, 92 242, 88 224 C46 226, 22 190, 36 152 C44 132, 60 120, 74 116 C64 74, 98 38, 148 34 Z" fill="url(#popcornBodyGrad)" stroke="#E58E00" stroke-width="8" stroke-linejoin="round"/>
+                                <circle cx="114" cy="152" r="31" fill="#FFFFFF"/>
+                                <circle cx="114" cy="152" r="23" fill="#08145E"/>
+                                <circle cx="186" cy="152" r="31" fill="#FFFFFF"/>
+                                <circle cx="186" cy="152" r="23" fill="#08145E"/>
+                                <path d="M 124 194 Q 150 224 176 194" fill="none" stroke="#08145E" stroke-width="10" stroke-linecap="round"/>
+                            </svg>
                             <h3 class="text-lg font-black text-neutral-900">Cine Feedback</h3>
                         </div>
                         <button id="btnCloseSideMenu" type="button" class="w-8 h-8 rounded-full bg-neutral-100 flex items-center justify-center font-bold text-neutral-600">✕</button>
@@ -368,18 +497,38 @@
 
                     <div class="space-y-3">
                         <button id="menuItemReport" type="button" class="w-full text-left p-3.5 rounded-2xl bg-neutral-100 font-bold text-xs flex items-center justify-between text-neutral-800 hover:bg-neutral-200">
-                            <span>Reportar problema en sala</span>
-                            <span>→</span>
+                            <span class="flex items-center gap-2.5">
+                                <svg class="w-4 h-4 text-neutral-700 shrink-0" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+                                </svg>
+                                <span>Reportar problema en sala</span>
+                            </span>
+                            <svg class="w-4 h-4 text-neutral-500 shrink-0" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+                            </svg>
                         </button>
 
                         <button id="menuItemLang" type="button" class="w-full text-left p-3.5 rounded-2xl bg-neutral-100 font-bold text-xs flex items-center justify-between text-neutral-800 hover:bg-neutral-200">
-                            <span>🌐 Cambiar Idioma</span>
+                            <span class="flex items-center gap-2.5">
+                                <svg class="w-4 h-4 text-neutral-700 shrink-0" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                                    <circle cx="12" cy="12" r="9"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3.6 9h16.8M3.6 15h16.8M12 3a14.5 14.5 0 010 18M12 3a14.5 14.5 0 000 18"/>
+                                </svg>
+                                <span>Cambiar Idioma</span>
+                            </span>
                             <span id="menuLangText" class="font-extrabold text-indigo-600">ES</span>
                         </button>
 
                         <button id="menuItemReset" type="button" class="w-full text-left p-3.5 rounded-2xl bg-neutral-100 font-bold text-xs flex items-center justify-between text-neutral-800 hover:bg-neutral-200">
-                            <span>🔄 Reiniciar encuesta</span>
-                            <span>→</span>
+                            <span class="flex items-center gap-2.5">
+                                <svg class="w-4 h-4 text-neutral-700 shrink-0" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h5M20 20v-5h-5M20.49 9A9 9 0 005.64 5.64L4 7m16 10l-1.64 1.36A9 9 0 013.51 15"/>
+                                </svg>
+                                <span>Reiniciar encuesta</span>
+                            </span>
+                            <svg class="w-4 h-4 text-neutral-500 shrink-0" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+                            </svg>
                         </button>
                     </div>
                 </div>
@@ -453,7 +602,7 @@
                 <div id="teamsConfigView" class="hidden space-y-3">
                     <div>
                         <label for="teamsUrlInput" class="block text-[11px] font-extrabold uppercase tracking-wide text-neutral-600 mb-1">Webhook URL de Teams</label>
-                        <input id="teamsUrlInput" type="url" placeholder="https://defaultd95b842837294ecda6f3beee9ba8c6.cb.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/11/workflows/5da1060d74eb4f708581ac5625f608ea/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=wvmQgdXFcNdTmJNEBC59L5kwfA8LoSkwKZg8mcN4gjg" class="w-full rounded-xl bg-neutral-100 p-3 text-xs font-mono text-neutral-900 focus:outline-none focus:ring-2 focus:ring-indigo-600">
+                        <input id="teamsUrlInput" type="url" placeholder="https://prod-xx.logic.azure.com/workflows/..." class="w-full rounded-xl bg-neutral-100 p-3 text-xs font-mono text-neutral-900 focus:outline-none focus:ring-2 focus:ring-indigo-600">
                     </div>
 
                     <label class="flex items-center justify-between p-3 rounded-xl bg-neutral-100 cursor-pointer">
@@ -491,6 +640,8 @@
 
     <!-- APPLICATION LOGIC -->
     <script>
+        const DEFAULT_WEBHOOK_URL = "https://defaultd95b842837294ecda6f3beee9ba8c6.cb.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/11/workflows/5da1060d74eb4f708581ac5625f608ea/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=wvmQgdXFcNdTmJNEBC59L5kwfA8LoSkwKZg8mcN4gjg";
+
         document.addEventListener('DOMContentLoaded', () => {
             // Theme Definitions
             const THEMES = {
@@ -546,6 +697,36 @@
             const mouthPath = document.getElementById('mouthPath');
             const btnSubmit = document.getElementById('btnSubmit');
             const btnReset = document.getElementById('btnReset');
+            const speechBubble = document.getElementById('speechBubble');
+            let bubbleHidden = false;
+            let bubbleHideTimeout = null;
+
+            function hideSpeechBubble() {
+                if (bubbleHidden || !speechBubble) return;
+                bubbleHidden = true;
+                speechBubble.classList.remove('animate-pop');
+                speechBubble.classList.add('opacity-0', 'scale-90', 'pointer-events-none');
+                clearTimeout(bubbleHideTimeout);
+                bubbleHideTimeout = setTimeout(() => {
+                    if (bubbleHidden) {
+                        speechBubble.classList.add('hidden');
+                    }
+                }, 300);
+            }
+
+            function showSpeechBubble() {
+                if (!speechBubble) return;
+                clearTimeout(bubbleHideTimeout);
+                bubbleHidden = false;
+                speechBubble.classList.remove('hidden', 'opacity-0', 'scale-90', 'pointer-events-none');
+                speechBubble.classList.add('animate-pop');
+            }
+
+            document.addEventListener('pointerdown', (e) => {
+                if (!bubbleHidden && !e.target.closest('#btnReset') && !e.target.closest('#menuItemReset')) {
+                    hideSpeechBubble();
+                }
+            }, { passive: true });
 
             // SVG Character Expressions
             const angryLidLeft = document.getElementById('angryLidLeft');
@@ -558,16 +739,28 @@
             // Load Saved Teams Configuration
             const teamsUrlInput = document.getElementById('teamsUrlInput');
             const teamsSendGoodCheck = document.getElementById('teamsSendGoodCheck');
-            teamsUrlInput.value = localStorage.getItem('palomita_teams_webhook') || '';
+            teamsUrlInput.value = localStorage.getItem('palomita_teams_webhook') || DEFAULT_WEBHOOK_URL;
             const savedSendGood = localStorage.getItem('palomita_teams_send_good');
             if (savedSendGood !== null) {
                 teamsSendGoodCheck.checked = savedSendGood === 'true';
             }
 
             // Update UI components according to state value
-            function updateUI(val) {
-                currentVal = Number(val);
+            function triggerSliderHaptic() {
+                if (navigator.vibrate) {
+                    navigator.vibrate(12);
+                }
+            }
+
+            function updateUI(val, withHaptic = false) {
+                const nextVal = Number(val);
+                const changed = nextVal !== currentVal;
+                currentVal = nextVal;
                 const t = THEMES[currentVal];
+
+                if (withHaptic && changed) {
+                    triggerSliderHaptic();
+                }
 
                 appCard.style.backgroundColor = t.bg;
                 appCard.style.color = t.text;
@@ -591,17 +784,159 @@
                 neutralBrows.classList.toggle('hidden', currentVal !== 1);
             }
 
-            ratingSlider.addEventListener('input', (e) => updateUI(e.target.value));
+            ratingSlider.addEventListener('pointerdown', triggerSliderHaptic, { passive: true });
+            ratingSlider.addEventListener('input', (e) => updateUI(e.target.value, true));
             document.querySelectorAll('.slider-step-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
                     ratingSlider.value = btn.dataset.val;
-                    updateUI(btn.dataset.val);
+                    updateUI(btn.dataset.val, true);
                 });
             });
 
             // Smooth pupil motion tracking mouse/touch
             const pupilLeft = document.getElementById('pupilLeft');
             const pupilRight = document.getElementById('pupilRight');
+            const characterWrapper = document.getElementById('characterWrapper');
+            const popcornSvg = document.getElementById('popcornSvg');
+            const popcornSparkles = document.getElementById('popcornSparkles');
+            const blinkLids = document.getElementById('blinkLids');
+            const surpriseMouth = document.getElementById('surpriseMouth');
+            const eyeSparkles = document.getElementById('eyeSparkles');
+            const blushCheeks = document.getElementById('blushCheeks');
+            const sneezeMouth = document.getElementById('sneezeMouth');
+            const butterDroplets = document.getElementById('butterDroplets');
+            let tapReactionIndex = 0;
+            let tapReactionTimer = null;
+
+            function restorePopcornExpression() {
+                popcornSvg.classList.remove(
+                    'react-squash',
+                    'react-wobble',
+                    'react-shake',
+                    'react-jump',
+                    'react-surprise',
+                    'react-blush',
+                    'react-double-hop',
+                    'react-sneeze'
+                );
+                blinkLids.classList.add('hidden');
+                surpriseMouth.classList.add('hidden');
+                sneezeMouth.classList.add('hidden');
+                eyeSparkles.classList.add('hidden');
+                blushCheeks.classList.add('hidden');
+                butterDroplets.classList.add('hidden');
+                butterDroplets.classList.remove('animate-butter-drops');
+                mouthPath.classList.remove('hidden');
+                popcornSparkles.classList.add('hidden');
+                popcornSparkles.classList.remove('animate-sparkle');
+                pupilLeft.setAttribute('r', '23');
+                pupilRight.setAttribute('r', '23');
+                pupilLeft.setAttribute('cx', '114');
+                pupilLeft.setAttribute('cy', '152');
+                pupilRight.setAttribute('cx', '186');
+                pupilRight.setAttribute('cy', '152');
+                updateUI(currentVal);
+            }
+
+            function hideSpecialBrowsAndLids() {
+                angryLidLeft.classList.add('hidden');
+                angryLidRight.classList.add('hidden');
+                angryBrows.classList.add('hidden');
+                neutralLidLeft.classList.add('hidden');
+                neutralLidRight.classList.add('hidden');
+                neutralBrows.classList.add('hidden');
+            }
+
+            function triggerPopcornReaction() {
+                clearTimeout(tapReactionTimer);
+                restorePopcornExpression();
+                void popcornSvg.offsetWidth; // Force reflow to restart animation cleanly
+
+                if (navigator.vibrate) {
+                    navigator.vibrate(5);
+                }
+
+                const reaction = tapReactionIndex % 8;
+                tapReactionIndex++;
+
+                if (reaction === 0) {
+                    // 1. Rebote elástico squash & stretch con parpadeo
+                    popcornSvg.classList.add('react-squash');
+                    blinkLids.classList.remove('hidden');
+                    setTimeout(() => blinkLids.classList.add('hidden'), 220);
+                } else if (reaction === 1) {
+                    // 2. Sonrojo tímido con mejillas rosadas y mirada hacia abajo
+                    popcornSvg.classList.add('react-blush');
+                    hideSpecialBrowsAndLids();
+                    blushCheeks.classList.remove('hidden');
+                    pupilLeft.setAttribute('cy', '158');
+                    pupilRight.setAttribute('cy', '158');
+                    mouthPath.setAttribute('d', 'M 134 200 Q 150 212 166 200');
+                } else if (reaction === 2) {
+                    // 3. Asombro con ojos brillantes y doble mini-salto
+                    popcornSvg.classList.add('react-double-hop');
+                    hideSpecialBrowsAndLids();
+                    pupilLeft.setAttribute('r', '25');
+                    pupilRight.setAttribute('r', '25');
+                    eyeSparkles.classList.remove('hidden');
+                    mouthPath.classList.add('hidden');
+                    surpriseMouth.classList.remove('hidden');
+                } else if (reaction === 3) {
+                    // 4. Estornudo de mantequilla apretando los ojos con impulso y gotitas doradas
+                    popcornSvg.classList.add('react-sneeze');
+                    hideSpecialBrowsAndLids();
+                    blinkLids.classList.remove('hidden');
+                    mouthPath.classList.add('hidden');
+                    sneezeMouth.classList.remove('hidden');
+                    setTimeout(() => {
+                        if (!sneezeMouth.classList.contains('hidden')) {
+                            butterDroplets.classList.remove('hidden');
+                            butterDroplets.classList.add('animate-butter-drops');
+                        }
+                    }, 220);
+                } else if (reaction === 4) {
+                    // 5. Inclinación juguetona izquierda-derecha con sonrisa abierta temporal
+                    popcornSvg.classList.add('react-wobble');
+                    hideSpecialBrowsAndLids();
+                    mouthPath.setAttribute('d', 'M 122 192 Q 150 232 178 192');
+                } else if (reaction === 5) {
+                    // 6. Sacudida energética horizontal
+                    popcornSvg.classList.add('react-shake');
+                    pupilLeft.setAttribute('r', '20');
+                    pupilRight.setAttribute('r', '20');
+                } else if (reaction === 6) {
+                    // 7. Salto con destellos dorados alrededor y parpadeo
+                    popcornSvg.classList.add('react-jump');
+                    popcornSparkles.classList.remove('hidden');
+                    popcornSparkles.classList.add('animate-sparkle');
+                    blinkLids.classList.remove('hidden');
+                    setTimeout(() => blinkLids.classList.add('hidden'), 180);
+                } else {
+                    // 8. Pulso de sorpresa con ojos bien abiertos
+                    popcornSvg.classList.add('react-surprise');
+                    hideSpecialBrowsAndLids();
+                    pupilLeft.setAttribute('r', '26');
+                    pupilRight.setAttribute('r', '26');
+                    mouthPath.classList.add('hidden');
+                    surpriseMouth.classList.remove('hidden');
+                }
+
+                tapReactionTimer = setTimeout(restorePopcornExpression, 640);
+            }
+
+            characterWrapper.addEventListener('pointerdown', (e) => {
+                e.stopPropagation();
+                hideSpeechBubble();
+                triggerPopcornReaction();
+            });
+
+            characterWrapper.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    hideSpeechBubble();
+                    triggerPopcornReaction();
+                }
+            });
 
             function movePupils(clientX, clientY) {
                 const rect = appCard.getBoundingClientRect();
@@ -633,6 +968,7 @@
                 if (currentLang === 'ES') {
                     document.getElementById('mainTitle').textContent = '¿Cómo fue tu experiencia hoy?';
                     document.getElementById('subTitle').textContent = 'Evalúa tu experiencia o avísanos si hay algo por atender en la sala al instante.';
+                    document.getElementById('speechBubbleText').textContent = 'Desliza para evaluar tu experiencia o usa el botón de reporte ⚠️ para notificarnos cualquier detalle en tu sala (audio, butaca o dulcería) y atenderte de inmediato.';
                     document.getElementById('txtAddNote').textContent = savedNote ? 'Editar nota ✓' : 'Agregar nota';
                     document.getElementById('txtSubmit').textContent = 'Enviar';
                     document.getElementById('txtReportBtn').textContent = 'Reportar un problema';
@@ -642,6 +978,7 @@
                 } else {
                     document.getElementById('mainTitle').textContent = 'How was your experience today?';
                     document.getElementById('subTitle').textContent = 'Rate your experience or let us know right away if something needs attention in your theater.';
+                    document.getElementById('speechBubbleText').textContent = 'Slide to rate your experience or use the report ⚠️ button to notify us of any issue in your theater (audio, seat, or concessions) for immediate assistance.';
                     document.getElementById('txtAddNote').textContent = savedNote ? 'Edit note ✓' : 'Add note';
                     document.getElementById('txtSubmit').textContent = 'Submit';
                     document.getElementById('txtReportBtn').textContent = 'Report a problem';
@@ -679,9 +1016,101 @@
 
             // Modal 2: Report Problem
             const reportModal = document.getElementById('reportModal');
+            const reportCard = document.getElementById('reportCard');
+            const reportDragHandle = document.getElementById('reportDragHandle');
             const reportStep1 = document.getElementById('reportStep1');
             const reportStep2 = document.getElementById('reportStep2');
             const reportValidationMsg = document.getElementById('reportValidationMsg');
+
+            function resetReportCardPosition() {
+                reportCard.style.transition = '';
+                reportCard.style.transform = '';
+            }
+
+            function closeReportModalWithSlide() {
+                reportCard.style.transition = 'transform 0.24s cubic-bezier(0.16, 1, 0.3, 1)';
+                reportCard.style.transform = 'translateY(100%)';
+                setTimeout(() => {
+                    reportModal.classList.add('hidden');
+                    resetReportCardPosition();
+                }, 230);
+            }
+
+            // Swipe down on top drag bar to close report modal
+            let dragStartY = 0;
+            let dragCurrentY = 0;
+            let dragStartTime = 0;
+            let isDraggingReport = false;
+
+            function onReportDragStart(clientY) {
+                isDraggingReport = true;
+                dragStartY = clientY;
+                dragCurrentY = clientY;
+                dragStartTime = Date.now();
+                reportCard.style.transition = 'none';
+            }
+
+            function onReportDragMove(clientY) {
+                if (!isDraggingReport) return;
+                dragCurrentY = clientY;
+                const deltaY = Math.max(0, dragCurrentY - dragStartY);
+                reportCard.style.transform = `translateY(${deltaY}px)`;
+            }
+
+            function onReportDragEnd() {
+                if (!isDraggingReport) return;
+                isDraggingReport = false;
+                const deltaY = Math.max(0, dragCurrentY - dragStartY);
+                const elapsed = Math.max(1, Date.now() - dragStartTime);
+                const velocity = deltaY / elapsed;
+
+                if (deltaY > 90 || (deltaY > 30 && velocity > 0.45)) {
+                    closeReportModalWithSlide();
+                } else {
+                    reportCard.style.transition = 'transform 0.24s cubic-bezier(0.16, 1, 0.3, 1)';
+                    reportCard.style.transform = 'translateY(0px)';
+                    setTimeout(() => {
+                        if (!isDraggingReport) resetReportCardPosition();
+                    }, 240);
+                }
+            }
+
+            reportDragHandle.addEventListener('touchstart', (e) => {
+                if (e.touches && e.touches[0]) {
+                    onReportDragStart(e.touches[0].clientY);
+                }
+            }, { passive: true });
+
+            reportDragHandle.addEventListener('touchmove', (e) => {
+                if (isDraggingReport && e.touches && e.touches[0]) {
+                    onReportDragMove(e.touches[0].clientY);
+                }
+            }, { passive: true });
+
+            reportDragHandle.addEventListener('touchend', onReportDragEnd);
+
+            reportDragHandle.addEventListener('pointerdown', (e) => {
+                if (e.pointerType === 'touch') return;
+                onReportDragStart(e.clientY);
+                if (reportDragHandle.setPointerCapture) {
+                    try { reportDragHandle.setPointerCapture(e.pointerId); } catch (_) {}
+                }
+            });
+
+            reportDragHandle.addEventListener('pointermove', (e) => {
+                if (e.pointerType === 'touch') return;
+                if (isDraggingReport) onReportDragMove(e.clientY);
+            });
+
+            reportDragHandle.addEventListener('pointerup', (e) => {
+                if (e.pointerType === 'touch') return;
+                onReportDragEnd();
+            });
+
+            reportDragHandle.addEventListener('pointercancel', (e) => {
+                if (e.pointerType === 'touch') return;
+                onReportDragEnd();
+            });
 
             // Side menu
             const sideMenuModal = document.getElementById('sideMenuModal');
@@ -690,6 +1119,7 @@
 
             document.getElementById('menuItemReport').addEventListener('click', () => {
                 sideMenuModal.classList.add('hidden');
+                resetReportCardPosition();
                 reportStep1.classList.remove('hidden');
                 reportStep2.classList.add('hidden');
                 reportValidationMsg.classList.add('hidden');
@@ -704,14 +1134,21 @@
             });
 
             document.getElementById('btnOpenReport').addEventListener('click', () => {
+                resetReportCardPosition();
                 reportStep1.classList.remove('hidden');
                 reportStep2.classList.add('hidden');
                 reportValidationMsg.classList.add('hidden');
                 reportModal.classList.remove('hidden');
             });
 
-            document.getElementById('btnCloseReport1').addEventListener('click', () => reportModal.classList.add('hidden'));
-            document.getElementById('btnCloseReport2').addEventListener('click', () => reportModal.classList.add('hidden'));
+            document.getElementById('btnCloseReport1').addEventListener('click', () => {
+                reportModal.classList.add('hidden');
+                resetReportCardPosition();
+            });
+            document.getElementById('btnCloseReport2').addEventListener('click', () => {
+                reportModal.classList.add('hidden');
+                resetReportCardPosition();
+            });
 
             document.querySelectorAll('.cat-pill').forEach(pill => {
                 pill.addEventListener('click', () => {
@@ -756,6 +1193,7 @@
                 }
                 reportValidationMsg.classList.add('hidden');
                 reportModal.classList.add('hidden');
+                resetReportCardPosition();
 
                 handleFinalSubmit('reporte', {
                     category: selectedCategory,
@@ -807,6 +1245,7 @@
                 thankYouView.classList.add('hidden');
                 thankYouView.classList.remove('flex');
                 document.getElementById('surveyView').classList.remove('hidden');
+                showSpeechBubble();
             });
 
             // Fast Taps Detection on Info Button "i"
@@ -955,7 +1394,7 @@
 
             // Send Adaptive Card Payload to Microsoft Teams Workflows
             async function sendToTeams(data, overrideUrl = null, forceSend = false) {
-                const webhookUrl = overrideUrl || localStorage.getItem('palomita_teams_webhook');
+                const webhookUrl = overrideUrl || localStorage.getItem('palomita_teams_webhook') || DEFAULT_WEBHOOK_URL;
                 if (!webhookUrl) return false;
 
                 const sendGood = localStorage.getItem('palomita_teams_send_good') !== 'false';
@@ -1054,3 +1493,4 @@
     </script>
 </body>
 </html>
+```
